@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Halló heimur"
-description: ""
+description: "Fyrsti pósturinn sem inniheldur ekkert kjöt"
 category: 
 tags: []
 ---
