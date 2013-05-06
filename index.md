@@ -4,7 +4,6 @@ title: Sillkongen
 tagline: YATB
 ---
 {% include JB/setup %}
-Here's a sample "posts list".
 
 <ul class="posts">
   {% for post in site.posts %}
