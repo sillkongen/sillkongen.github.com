@@ -22,7 +22,6 @@ Einnig þarf að setja upp “heroku toolbelt”. Hvað gerir heroku toolbelt, �
 
 Once installed, you’ll have access to the heroku command from your command shell. Log in using the email address and password you used when creating your Heroku account:
 
-```
 $ heroku login
 Enter your Heroku credentials.
 Email: adam@example.com
@@ -32,27 +31,21 @@ Would you like to generate one? [Yn]
 Generating new SSH public key.
 Uploading ssh public key /Users/adam/.ssh/id_rsa.pub
 You’re now ready to create your first Heroku app:
-```
 
-```
 $ cd ~/myapp
 $ heroku create
 Creating stark-fog-398... done, stack is cedar
 http://stark-fog-398.herokuapp.com/ | git@heroku.com:stark-fog-398.git
 Git remote heroku added
-```
 
 Þegar settur hefur verið upp Heroku aðgangur og Heroku toolbelt þá er hægt að snúa sér að því að setja upp WordPress. Afritið textann og fylgið leiðbeiningunum og það ætti að vera uppsett WordPress síða eftir 10 mínútur.
 
 Ég afritaði beint af GitHub síðunni sem er til fyrir prójektið. Það er tengill neðst á GitHub síðuna.
 
-```
 git clone git://github.com/mhoofman/wordpress-heroku.git
-```
 
 With the Heroku gem, create your app
 
-```
 $ cd wordpress-heroku
 $ heroku create
 > Creating strange-turtle-1234... done, stack is cedar
@@ -99,6 +92,5 @@ $ git push heroku production:master
 >
 > To git@heroku:strange-turtle-1234.git
 > * [new branch]    production -> master
-```
 
 https://github.com/mhoofman/wordpress-heroku-
