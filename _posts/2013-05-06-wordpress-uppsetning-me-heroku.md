@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Wordpress uppsetning með Heroku"
-description: ""
+description: "Leiðbeiningar um það hvernig á að setja upp Wordpress með Heroku"
 category: 
 tags: []
 ---
