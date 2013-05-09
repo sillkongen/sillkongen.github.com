@@ -1,0 +1,10 @@
+---
+layout: post
+title: "Replace a bootblock in Solaris"
+description: ""
+category: OS X
+tags: [Solaris]
+---
+{% include JB/setup %}
+
+

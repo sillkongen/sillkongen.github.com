@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Sillkongen
+title: blog.skywalker.is
 tagline: YATB
 ---
 {% include JB/setup %}
