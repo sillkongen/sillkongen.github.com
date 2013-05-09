@@ -1,14 +1,17 @@
 ---
+published: true
 layout: post
-title: "Wordpress uppsetning með Heroku"
-description: "Leiðbeiningar um það hvernig á að setja upp Wordpress með Heroku"
-category: 
+title: Wordpress uppsetning með Heroku
+description: Leiðbeiningar um það hvernig á að setja upp Wordpress með Heroku
+category: null
 tags: []
+
 ---
+
 {% include JB/setup %}
 **Uppsetning á WordPress á Heroku**
 
-Ég skoðaði Jekyll um daginn til að hýsa bloggið mitt á GitHub. Ég var ekki nógu hrifinn af því. Ég ákvað að skoða Heroku í dag þess í stað og ákvað að setja upp WordPress þar.
+Ég ákvað að skoða Heroku í dag og ákvað að setja upp WordPress þar. Það gekk mjög auðveldlega. En fyrir þær sakir að ég var byrjaður að fikta með að koma nýju og gömli efni frá mér á jekyll þá geri ég ráð fyrir því að halda mig við þá uppsetningu.
 
 Til þess að geta sett upp WordPress á Heroku verðurðu að setja upp aðgang þar.
 
