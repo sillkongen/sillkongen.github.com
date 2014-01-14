@@ -9,7 +9,7 @@ tags: []
 
 
 Detailed installation of an Arch Linux installation with the following components:
-	ZFS and Docker
+	ZFS, Docker and OpenSSH
 
 
 
@@ -410,3 +410,163 @@ And, to make it persistent across reboots, enable it on the host’s **/etc/sysc
 
 
 net.ipv4.ip_forward=1
+
+OpenSSH
+-------
+
+[Install][1] [openssh][2] from the [official repositories][3].
+
+[1]: <https://wiki.archlinux.org/index.php/Pacman>
+
+[2]: <https://www.archlinux.org/packages/?name=openssh>
+
+[3]: <https://wiki.archlinux.org/index.php/Official_repositories>
+
+### Install
+
+
+pacman -S openssh
+
+### Configuring SSH
+
+#### Client
+
+The SSH client configuration file is `/etc/ssh/ssh_config` or `~/.ssh/config`.
+
+It is not longer needed to explicitly set `Protocol 2`, it is commented out in the default configuration file. That means `Protocol 1` will not be used as long as it is not explicitly enabled. (source: <http://www.openssh.org/txt/release-5.4>)
+
+#### Daemon
+
+The SSH daemon configuration file can be found and edited in `/etc/ssh/sshd_config`.
+
+To allow access only for some users add this line:
+
+
+	AllowUsers    user1 user2
+
+
+To allow access only for some groups:
+
+
+	AllowGroups   group1 group2
+
+
+To disable root login over SSH, change the PermitRootLogin line into this:
+
+
+	PermitRootLogin no
+
+
+To add a nice welcome message edit the file `/etc/issue` and change the Banner line into this:
+
+
+	Banner /etc/issue
+
+
+**Tip:**
+
+-   You may want to change the default port from 22 to any higher port (see [security through obscurity][4]). Even though the port ssh is running on could be detected by using a port-scanner like [nmap][5], changing it will reduce the number of log entries caused by automated authentication attempts. To help select a port review the [list of TCP and UDP port numbers][6]. You can also find port information locally in `/etc/services`. Select an alternative port that is **not** already assigned to a common service to prevent conflicts.
+
+    [4]: <http://en.wikipedia.org/wiki/Security_through_obscurity>
+
+    [5]: <https://www.archlinux.org/packages/?name=nmap>
+
+    [6]: <http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers>
+
+-   Disabling password logins entirely will greatly increase security, see [SSH Keys][7] for more information.
+
+    [7]: <https://wiki.archlinux.org/index.php/SSH_Keys>
+
+### Managing the sshd daemon
+
+You can start the sshd daemon with the following command:
+
+
+	# systemctl start sshd
+
+
+You can enable the sshd daemon at startup with the following command:
+
+
+	# systemctl enable sshd.service
+
+
+**Warning:**Systemd is an asynchronous starting process. If you bind the SSH daemon to a specific IP address `ListenAddress 192.168.1.100` it may fail to load during boot since the default sshd.service unit file has no dependency on network interfaces being enabled. When binding to an IP address, you will need to add `After=network.target` to a custom sshd.service unit file. See [Systemd#Editing provided unit files][8].
+
+[8]: <https://wiki.archlinux.org/index.php/Systemd#Editing_provided_unit_files>
+
+Or you can enable SSH Daemon socket so the daemon is started on the first incoming connection:
+
+	# systemctl enable sshd.socket
+
+
+If you use a different port than the default 22, you have to set "ListenStream" in the unit file. Copy /lib/systemd/system/sshd.socket to /etc/systemd/system/sshd.socket to keep your unit file from being overwritten on upgrades. In /etc/systemd/system/sshd.socket change "ListenStream" the appropriate port.
+
+**Warning:**Using sshd.socket effectively negates the `ListenAddress` setting, so using the default sshd.socket will allow connections over any address. To achieve the effect of setting `ListenAddress`, you must create a custom unit file and modify ListenStream (ie. `ListenStream=192.168.1.100:22` is equivalent to `ListenAddress 192.168.1.100`). You must also add `FreeBind=true` under `[Socket]` or else setting the IP address will have the same drawback as setting `ListenAddress`: the socket will fail to start if the network is not up in time.
+
+### Connecting to the server
+
+To connect to a server, run:
+
+
+	$ ssh -p port user@server-address
+
+
+### Protecting SSH
+
+Allowing remote log-on through SSH is good for administrative purposes, but can pose a threat to your server's security. Often the target of brute force attacks, SSH access needs to be limited properly to prevent third parties gaining access to your server.
+
+-   Use non-standard account names and passwords
+
+-   Only allow incoming SSH connections from trusted locations
+
+-   Use [fail2ban][1] or [sshguard][2] to monitor for brute force attacks, and ban brute forcing IPs accordingly
+
+    [1]: <https://wiki.archlinux.org/index.php/Fail2ban>
+
+    [2]: <https://wiki.archlinux.org/index.php/Sshguard>
+
+##### Protecting against brute force attacks
+
+Brute forcing is a simple concept: One continuously tries to log in to a webpage or server log-in prompt like SSH with a high number of random username and password combinations. You can protect yourself from brute force attacks by using an automated script that blocks anybody trying to brute force their way in, for example [fail2ban][3] or [sshguard][4].
+
+[3]: <https://wiki.archlinux.org/index.php/Fail2ban>
+
+[4]: <https://wiki.archlinux.org/index.php/Sshguard>
+
+##### Deny root login
+
+It is generally considered bad practice to allow the user **root** to log in over SSH: The **root** account will exist on nearly any Linux system and grants full access to the system, once login has been achieved. Sudo provides root rights for actions requiring these and is the more secure solution, third parties would have to find a username present on the system, the matching password and the matching password for sudo to get root rights on your system. More barriers to be breached before full access to the system is reached.
+
+Configure SSH to deny remote logins with the root user by editing `/etc/ssh/sshd_config` and look for this section:
+
+
+	# Authentication:
+
+	#LoginGraceTime 2m
+	#PermitRootLogin yes
+	#StrictModes yes
+	#MaxAuthTries 6
+	#MaxSessions 10
+
+
+Now simply change *#PermitRootLogin yes* to no, and uncomment the line:
+
+
+	PermitRootLogin no
+
+
+Next, restart the SSH daemon:
+
+
+	# systemctl restart sshd
+
+
+You will now be unable to log in through SSH under root, but will still be able to log in with your normal user and use *su* - or *sudo* to do system administration.
+
+
+
+References:
+
+<http://www.muktware.com/2013/11/how-to-install-arch-linux-updated/16825/5>
+
