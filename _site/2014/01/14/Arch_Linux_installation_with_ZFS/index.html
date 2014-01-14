@@ -1,0 +1,497 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      
+        Arch Linux installation / January 2104 - 
+      
+      Blog.Skywalker.is
+    </title>
+    <meta name="description" content="">
+    <meta name="author" content="Oskar Agustsson">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="/assets/themes/hooligan/css-social-buttons/css/zocial.stripped.css">
+    <link href="/assets/themes/hooligan/css/pygments.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/hooligan/css/darkstrap.css" rel="stylesheet" type="text/css" media="all">    
+    <link href="/assets/themes/hooligan/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    
+    <!-- fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>      
+
+
+          <a class="brand" href="/">Blog.Skywalker.is</a>
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              
+              
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+            </ul>
+            <ul class="nav pull-right social visible-desktop">
+              <li class="divider-vertical"></li>
+              
+                <li>
+                  <a href="https://github.com/sillkongen" class="zocial github icon" target="_blank">
+                    <span class="hidden-desktop">Github</span>
+                  </a>
+                </li>
+              
+                  
+              
+                <li>
+                  <a href="https://twitter.com/sillkongen" class="zocial twitter icon" target="_blank">
+                  <span class="hidden-desktop">Twitter</span>
+                  </a>
+                </li>
+                                        
+                         
+                                  
+              
+                <li>
+                  <a href="http://feeds.feedburner.com/feedname" class="zocial rss icon" target="_blank">
+                    <span class="hidden-desktop">FeedBurner</span>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        
+<div class="page-header">
+  <h1>
+    Arch Linux installation / January 2104 
+    
+  </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>Detailed installation of an Arch Linux installation with the following components: ZFS and Docker</p>
+
+<h3 id="create_bootable_usb_stick">Create bootable USB stick</h3>
+
+<pre><code>$ sudo dd if=/path_to_arch_.iso of=/dev/sdX 
+$ lsblk cgdisk /dev/sda</code></pre>
+
+<p>Boot Partition BIOS-GPT requires BIOS Boot Partition at the beginning of the disk. The Free Space is already selected and then</p>
+
+<pre><code>Hit New -&gt; Enter First Sector -&gt; Enter Size in Sector -&gt; 1007KiB -&gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&gt; ef02 -&gt;Enter Enter partition name – &gt; Enter</code></pre>
+
+<p>You will notice a 1007.0 KiB BIOS boot partition has been created.</p>
+
+<p>Create root Use keyboard to select the free space</p>
+
+<pre><code>Hit New -&gt; Enter First Sector -&gt; Enter Now it will ask you how much space you want to allocate to that partition. In my case I will give root over 20GB Size in Sector -&gt; 20GB -&gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&gt; Enter Enter partition name – &gt; Enter</code></pre>
+
+<p>Now you will see a 20GB partition has been created.</p>
+
+<p>Creating Swap I have SSD on my desktop with 8GB of RAM and I really don’t need suspension or hibernation so I don’t bother to create swap. Depending on your need, you can create swap. Use keyboard and select Free Space</p>
+
+<p>Hit New -&gt; Enter First Sector -&gt; Enter Now it will ask you how much space you want to allocate to that partition. I would give 2GB for swap (check what’s recommended) Size in Sector -&gt; 2GB -&gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&gt; Enter Enter partition name – &gt; swap</p>
+
+<p>Swap has been created.</p>
+
+<p>Creating home Use keyboard and select Free Space</p>
+
+<pre><code>Hit New -&gt; Enter First Sector -&gt; Enter Now it will ask you how much space you want to allocate to that partition.
+Here I am giving the remaining space to home. Size in Sector -&gt; 50GB -&gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&gt; Enter Enter partition name – &gt; home -&gt; Enter</code></pre>
+
+<p>If everything looks good select ‘Write‘, which will ask you to confirm if you want to write the changes. Type ‘yes‘ if you are sure. Once done select ‘Quit‘.</p>
+
+<p>It’s now time to format these partitions and we are going to use ext4 file system. Run the following command for root and home (note choose the appropriate partition instead of sda2 and sda4).</p>
+
+<pre><code># mkfs.ext4 /dev/sda2 	
+
+
+
+# mkfs.ext4 /dev/sda4</code></pre>
+
+<p>Now let’s format SWAP</p>
+
+<pre><code># mkswap /dev/sda3 	
+
+
+
+# swapon /dev/sda3</code></pre>
+
+<p>[make sure to select the appropriate partition instead of sda3]</p>
+
+<p>Installing the base system</p>
+
+<p>If everything looks fine, it’s time to install Arch. First we need to mount root partition and then create home directory.</p>
+
+<pre><code># mount /dev/sda2 /mnt</code></pre>
+
+<p>Then create the home directory:</p>
+
+<pre><code># mkdir /mnt/home</code></pre>
+
+<p>Now mount home</p>
+
+<pre><code>mount /dev/sda4 /mnt/home</code></pre>
+
+<p>Step #4 Choose mirror</p>
+
+<p>Before we initiate the install process let’s select the closest mirror so that you get the best speed while downloading packages. To edit the mirror list run this command:</p>
+
+<pre><code># nano /etc/pacman.d/mirrorlist</code></pre>
+
+<p>Which will open the long list of mirrors. You can select the one closest to you. If you want to search the name of the location hit Ctrl+W and type the location you are looking for, once found go to the url of the mirror and hit Alt+6 to copy the line. Now use ‘Page Up‘ key to go on top and then hit Ctrl+U to paste that line on top. Hit Ctrl+x to exit and then type Y to save the changes you made.</p>
+
+<p>Step #5 Install base packages</p>
+
+<p>Now we are about to install base and base-devel packages (which will be needed later). Run this command:</p>
+
+<pre><code># pacstrap -i /mnt base base-devel</code></pre>
+
+<p>Step #6 Configure fstab</p>
+
+<p>Once all these packages are installed you need to configure your fstab. Run:</p>
+
+<pre><code># genfstab -U -p /mnt &gt;&gt; /mnt/etc/fstab</code></pre>
+
+<p>(NOTE: Run the above command only once even if there are any issues. If there are problems, edit fstab manually, don’t re-run the command).</p>
+
+<p>You must always check if fstab entry is correct or you won’t be able to boot into your system. To check fstab entry, run:</p>
+
+<pre><code># nano /mnt/etc/fstab</code></pre>
+
+<p>If everything is OK you should see root and home mounted.</p>
+
+<p>Chroot into your newly installed system to configure it.</p>
+
+<pre><code># arch-chroot /mnt</code></pre>
+
+<p>Step #7 Language and location settings</p>
+
+<p>We are going to configure the language of the new system. Since I am using English I am choosing “en_US.UTF-8“. You can choose the language that you use. To set the language, run the following command:</p>
+
+<pre><code># nano /etc/locale.gen</code></pre>
+
+<p>It will open a huge list of locales, go and un-comment the one you need. In my case I un-commented:</p>
+
+<p>en_US.UTF-8 UTF-8</p>
+
+<p>Now run</p>
+
+<pre><code># locale-gen 	
+# echo LANG=en_US.UTF-8 &gt; /etc/locale.conf 	
+# export LANG=en_US.UTF-8
+
+
+Step #8 Time zone</code></pre>
+
+<p>It’s time now to configure the time zone for your system. If you don’t know the exact name of your sub-time zone (for example in my case it Zone is America and sub-zone is New_York), run following command to find the time zone.</p>
+
+<pre><code># ls /usr/share/zoneinfo/</code></pre>
+
+<p>Now you can configure the zone</p>
+
+<pre><code># ln -s /usr/share/zoneinfo/Zone/SubZone /etc/localtime</code></pre>
+
+<p>In my case it was</p>
+
+<pre><code># ln -s /usr/share/zoneinfo/America/New_York&gt; /etc/localtime</code></pre>
+
+<p>Let’s now configure the hardware clock. It is recommended to use UTC instead of localtime.</p>
+
+<pre><code># hwclock --systohc --utc</code></pre>
+
+<p>Get a hostname</p>
+
+<p>If you want a custom hostname for your system, run the following command and choose your desired name instead of muktware</p>
+
+<pre><code># echo muktware &gt; /etc/hostname</code></pre>
+
+<p>Step #9 Configure repositories</p>
+
+<p>Now it’s time to configure repositories. Open the pacman.conf file:</p>
+
+<pre><code># nano /etc/pacman.conf</code></pre>
+
+<p>If you are using 64 bit system you should go ahead and enable (un-comment) the “multilib” repo:</p>
+
+<p>[multilib] Include = /etc/pacman.d/mirrorlist</p>
+
+<p>Then hit Ctrl+X and then type ‘y‘ when asked.</p>
+
+<p>Now it’s time to update the repositories by running this command:</p>
+
+<pre><code>pacman -Sy</code></pre>
+
+<p>Step #10 Create users</p>
+
+<p>We first need to give a root password so we can perform administrative tasks. But we will also create a user for the system as it’s not recommended to run as root.</p>
+
+<p>First set root password. Run this command and give the password and give the desired password:</p>
+
+<pre><code># passwd</code></pre>
+
+<p>Now it’s time to create a user for the system and also add some groups to it. So run the following command and replace ‘muktware‘ with your user-name.</p>
+
+<pre><code># useradd -m -g users -G wheel,storage,power -s /bin/bash oskar</code></pre>
+
+<p>Then give the password for this new user (which in my case was oskar). When you run this command it will again ask you to enter new password:</p>
+
+<pre><code># passwd oskar</code></pre>
+
+<p>Now we have to allow this use to do administrative jobs as sudo so let’s install sudo.</p>
+
+<pre><code># pacman -S sudo 	
+# pacman -Ss sudo</code></pre>
+
+<p>Once that is done, we will now allow the users in wheel group to be able to performance administrative tasks with sudo. Run the following command to edit the sudoers:</p>
+
+<pre><code># EDITOR=nano visudo</code></pre>
+
+<p>It will open the sudoers file where you have to uncomment this line:</p>
+
+<pre><code>%wheel ALL=(ALL) ALL</code></pre>
+
+<p>I will also recommend installing bash-completion so that Arch auto-complete commands of names of packages:</p>
+
+<pre><code># pacman -S bash-completion</code></pre>
+
+<p>Step #11 Install boot loader</p>
+
+<p>We are now going to install grub and configure the boot loader. In my case I have a system with BIOS (if you have UFI then check out the appropriate Arch Wiki page).</p>
+
+<p>Let’s first install grub for bios and configure it. Run these commands:</p>
+
+<pre><code># pacman -S grub 	
+
+
+
+# grub-install --target=i386-pc --recheck /dev/sda</code></pre>
+
+<p>I have additional operating system installed on the same system and I wanted Arch to show these systems in the grub menu so I can select at the boot. Even if you don’t have other OSes installed I would recommend installing OS Prober:</p>
+
+<pre><code>pacman -S os-prober openssh</code></pre>
+
+<p>Once it is installed update the grub so Arch knows about other operating systems. Run this command:</p>
+
+<pre><code># grub-mkconfig -o /boot/grub/grub.cfg</code></pre>
+
+<p>In order for it to stay connected to the Internet after reboots, run this commands</p>
+
+<pre><code># systemctl enable dhcpcd.service 
+# systemctl start dhcpcd.service
+# systemctl enable sshd.service
+# systemctl 	</code></pre>
+
+<p>We are now done with the installation and configuration of Arch Linux. There is still some work left – installing the Display Manager (X server), the desktop environment and appropriate graphics drivers. Since the OS is installed let’s reboot into the new OS. So first exit from the chroot environment:</p>
+
+<pre><code># exit</code></pre>
+
+<p>And now unmount the root, home and reboot the system:</p>
+
+<pre><code>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# umount -R /mnt 	
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# reboot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</code></pre>
+
+<h3 id="zfs_installation">ZFS installation</h3>
+
+<p>For fast and effortless installation and updates, the <a href="http://docs.docker.io/en/latest/installation/archlinux/#installation">“archzfs”</a> signed repository is available to add to your <code>pacman.conf</code>:</p>
+
+<p>/etc/pacman.conf</p>
+
+<p>[demz-repo-core] SigLevel = Required Server = http://demizerone.com/$repo/$arch</p>
+
+<p>The repository and packages are signed with the maintainer’s PGP key which is verifiable here: <a href="http://demizerone.com">http://demizerone.com</a>. This key is not trusted by any of the Arch Linux master keys, so it will need to be locally signed before use. See <a href="http://docs.docker.io/en/latest/installation/archlinux/#installation">pacman-key</a>.</p>
+
+<p>Add the maintainer’s key,</p>
+
+<pre><code># pacman-key -r 0EE7A126</code></pre>
+
+<p>and locally sign to add it to the system’s trust database,</p>
+
+<pre><code># pacman-key --lsign-key 0EE7A126</code></pre>
+
+<p>Once the key has been signed, it is now possible to update the package database,</p>
+
+<pre><code># pacman -Syyu</code></pre>
+
+<p>and install ZFS packages:</p>
+
+<pre><code># pacman -S archzfs</code></pre>
+
+<h2 id="docker_installation">Docker Installation</h2>
+
+<p>For the normal package a simple</p>
+
+<pre><code>pacman -S docker</code></pre>
+
+<p>is all that is needed.</p>
+
+<p>For the AUR package execute:</p>
+
+<pre><code>yaourt -S docker-git</code></pre>
+
+<p>The instructions here assume <strong>yaourt</strong> is installed. See <a href="https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_packages">Arch User Repository</a> for information on building and installing packages from the AUR if you have not done so before.</p>
+
+<h2 id="starting_docker">Starting Docker</h2>
+
+<p>There is a systemd service unit created for docker. To start the docker service:</p>
+
+<pre><code>sudo systemctl start docker</code></pre>
+
+<p>To start on system boot:</p>
+
+<pre><code>sudo systemctl enable docker</code></pre>
+
+<h2 id="network_configuration">Network Configuration</h2>
+
+<p><a href="http://docs.docker.io/en/latest/installation/archlinux/#network-configuration">http://docs.docker.io/en/latest/installation/archlinux/#network-configuration</a></p>
+
+<p>IPv4 packet forwarding is disabled by default on Arch, so internet access from inside the container may not work.</p>
+
+<p>To enable the forwarding, run as root on the host system:</p>
+
+<p>sysctl net.ipv4.ip_forward=1</p>
+
+<p>And, to make it persistent across reboots, enable it on the host’s <strong>/etc/sysctl.d/docker.conf</strong>:</p>
+
+<p>net.ipv4.ip_forward=1</p>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn prev" href="/2013/05/10/hls-straumar-notau-linux-netjn-sem-videtki" title="HLS straumar, notaðu Linux netþjón sem videótæki">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next disabled">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+  </div>
+  
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>14 January 2014</span></div>
+    </section>
+         
+             
+  </div>
+</div>
+
+
+      </div>
+
+      <footer>
+        <p>&copy; 2014 Oskar Agustsson
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://github.com/dhulihan/hooligan" target="_blank">The Hooligan Theme</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/assets/themes/hooligan/js/jquery.min.js"><\/script>')</script>
+    <script src="/assets/themes/hooligan/bootstrap/js/bootstrap.min.js"></script>
+
+    
+  </body>
+</html>
+

@@ -1,11 +1,11 @@
 ---
-published: false
+layout: post
+title: "Arch Linux installation / January 2104"
+description: ""
+category: 
+tags: []
 ---
-
 {% include JB/setup %}
-Arch Linux installation January 2104
-====================================
-
 
 
 Detailed installation of an Arch Linux installation with the following components:

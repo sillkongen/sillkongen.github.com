@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Blog.Skywalker.is</title>
+ <link href="http://sillkongen.github.com/atom.xml" rel="self"/>
+ <link href="http://sillkongen.github.com"/>
+ <updated>2014-01-14T11:02:49+01:00</updated>
+ <id>http://sillkongen.github.com</id>
+ <author>
+   <name>Oskar Agustsson</name>
+   <email>oskar.agustsson@gmail.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Arch Linux installation / January 2104</title>
+   <link href="http://sillkongen.github.com/2014/01/14/Arch_Linux_installation_with_ZFS"/>
+   <updated>2014-01-14T00:00:00+01:00</updated>
+   <id>http://sillkongen.github.com/2014/01/14/Arch_Linux_installation_with_ZFS</id>
+   <content type="html">&lt;p&gt;Detailed installation of an Arch Linux installation with the following components: ZFS and Docker&lt;/p&gt;
+
+&lt;h3 id=&quot;create_bootable_usb_stick&quot;&gt;Create bootable USB stick&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo dd if=/path_to_arch_.iso of=/dev/sdX 
+$ lsblk cgdisk /dev/sda&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Boot Partition BIOS-GPT requires BIOS Boot Partition at the beginning of the disk. The Free Space is already selected and then&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Hit New -&amp;gt; Enter First Sector -&amp;gt; Enter Size in Sector -&amp;gt; 1007KiB -&amp;gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&amp;gt; ef02 -&amp;gt;Enter Enter partition name – &amp;gt; Enter&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You will notice a 1007.0 KiB BIOS boot partition has been created.&lt;/p&gt;
+
+&lt;p&gt;Create root Use keyboard to select the free space&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Hit New -&amp;gt; Enter First Sector -&amp;gt; Enter Now it will ask you how much space you want to allocate to that partition. In my case I will give root over 20GB Size in Sector -&amp;gt; 20GB -&amp;gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&amp;gt; Enter Enter partition name – &amp;gt; Enter&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you will see a 20GB partition has been created.&lt;/p&gt;
+
+&lt;p&gt;Creating Swap I have SSD on my desktop with 8GB of RAM and I really don’t need suspension or hibernation so I don’t bother to create swap. Depending on your need, you can create swap. Use keyboard and select Free Space&lt;/p&gt;
+
+&lt;p&gt;Hit New -&amp;gt; Enter First Sector -&amp;gt; Enter Now it will ask you how much space you want to allocate to that partition. I would give 2GB for swap (check what’s recommended) Size in Sector -&amp;gt; 2GB -&amp;gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&amp;gt; Enter Enter partition name – &amp;gt; swap&lt;/p&gt;
+
+&lt;p&gt;Swap has been created.&lt;/p&gt;
+
+&lt;p&gt;Creating home Use keyboard and select Free Space&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Hit New -&amp;gt; Enter First Sector -&amp;gt; Enter Now it will ask you how much space you want to allocate to that partition.
+Here I am giving the remaining space to home. Size in Sector -&amp;gt; 50GB -&amp;gt; Enter Hex Code of GUID (L to show codes, Enter = 8300) -&amp;gt; Enter Enter partition name – &amp;gt; home -&amp;gt; Enter&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If everything looks good select ‘Write‘, which will ask you to confirm if you want to write the changes. Type ‘yes‘ if you are sure. Once done select ‘Quit‘.&lt;/p&gt;
+
+&lt;p&gt;It’s now time to format these partitions and we are going to use ext4 file system. Run the following command for root and home (note choose the appropriate partition instead of sda2 and sda4).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mkfs.ext4 /dev/sda2 	
+
+
+
+# mkfs.ext4 /dev/sda4&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now let’s format SWAP&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mkswap /dev/sda3 	
+
+
+
+# swapon /dev/sda3&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;[make sure to select the appropriate partition instead of sda3]&lt;/p&gt;
+
+&lt;p&gt;Installing the base system&lt;/p&gt;
+
+&lt;p&gt;If everything looks fine, it’s time to install Arch. First we need to mount root partition and then create home directory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mount /dev/sda2 /mnt&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then create the home directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mkdir /mnt/home&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now mount home&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount /dev/sda4 /mnt/home&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #4 Choose mirror&lt;/p&gt;
+
+&lt;p&gt;Before we initiate the install process let’s select the closest mirror so that you get the best speed while downloading packages. To edit the mirror list run this command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# nano /etc/pacman.d/mirrorlist&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Which will open the long list of mirrors. You can select the one closest to you. If you want to search the name of the location hit Ctrl+W and type the location you are looking for, once found go to the url of the mirror and hit Alt+6 to copy the line. Now use ‘Page Up‘ key to go on top and then hit Ctrl+U to paste that line on top. Hit Ctrl+x to exit and then type Y to save the changes you made.&lt;/p&gt;
+
+&lt;p&gt;Step #5 Install base packages&lt;/p&gt;
+
+&lt;p&gt;Now we are about to install base and base-devel packages (which will be needed later). Run this command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacstrap -i /mnt base base-devel&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #6 Configure fstab&lt;/p&gt;
+
+&lt;p&gt;Once all these packages are installed you need to configure your fstab. Run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# genfstab -U -p /mnt &amp;gt;&amp;gt; /mnt/etc/fstab&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(NOTE: Run the above command only once even if there are any issues. If there are problems, edit fstab manually, don’t re-run the command).&lt;/p&gt;
+
+&lt;p&gt;You must always check if fstab entry is correct or you won’t be able to boot into your system. To check fstab entry, run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# nano /mnt/etc/fstab&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If everything is OK you should see root and home mounted.&lt;/p&gt;
+
+&lt;p&gt;Chroot into your newly installed system to configure it.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# arch-chroot /mnt&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #7 Language and location settings&lt;/p&gt;
+
+&lt;p&gt;We are going to configure the language of the new system. Since I am using English I am choosing “en_US.UTF-8“. You can choose the language that you use. To set the language, run the following command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# nano /etc/locale.gen&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It will open a huge list of locales, go and un-comment the one you need. In my case I un-commented:&lt;/p&gt;
+
+&lt;p&gt;en_US.UTF-8 UTF-8&lt;/p&gt;
+
+&lt;p&gt;Now run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# locale-gen 	
+# echo LANG=en_US.UTF-8 &amp;gt; /etc/locale.conf 	
+# export LANG=en_US.UTF-8
+
+
+Step #8 Time zone&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It’s time now to configure the time zone for your system. If you don’t know the exact name of your sub-time zone (for example in my case it Zone is America and sub-zone is New_York), run following command to find the time zone.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# ls /usr/share/zoneinfo/&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you can configure the zone&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# ln -s /usr/share/zoneinfo/Zone/SubZone /etc/localtime&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In my case it was&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# ln -s /usr/share/zoneinfo/America/New_York&amp;gt; /etc/localtime&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let’s now configure the hardware clock. It is recommended to use UTC instead of localtime.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# hwclock --systohc --utc&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Get a hostname&lt;/p&gt;
+
+&lt;p&gt;If you want a custom hostname for your system, run the following command and choose your desired name instead of muktware&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# echo muktware &amp;gt; /etc/hostname&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #9 Configure repositories&lt;/p&gt;
+
+&lt;p&gt;Now it’s time to configure repositories. Open the pacman.conf file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# nano /etc/pacman.conf&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you are using 64 bit system you should go ahead and enable (un-comment) the “multilib” repo:&lt;/p&gt;
+
+&lt;p&gt;[multilib] Include = /etc/pacman.d/mirrorlist&lt;/p&gt;
+
+&lt;p&gt;Then hit Ctrl+X and then type ‘y‘ when asked.&lt;/p&gt;
+
+&lt;p&gt;Now it’s time to update the repositories by running this command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pacman -Sy&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #10 Create users&lt;/p&gt;
+
+&lt;p&gt;We first need to give a root password so we can perform administrative tasks. But we will also create a user for the system as it’s not recommended to run as root.&lt;/p&gt;
+
+&lt;p&gt;First set root password. Run this command and give the password and give the desired password:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# passwd&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now it’s time to create a user for the system and also add some groups to it. So run the following command and replace ‘muktware‘ with your user-name.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# useradd -m -g users -G wheel,storage,power -s /bin/bash oskar&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then give the password for this new user (which in my case was oskar). When you run this command it will again ask you to enter new password:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# passwd oskar&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we have to allow this use to do administrative jobs as sudo so let’s install sudo.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman -S sudo 	
+# pacman -Ss sudo&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once that is done, we will now allow the users in wheel group to be able to performance administrative tasks with sudo. Run the following command to edit the sudoers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# EDITOR=nano visudo&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It will open the sudoers file where you have to uncomment this line:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%wheel ALL=(ALL) ALL&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I will also recommend installing bash-completion so that Arch auto-complete commands of names of packages:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman -S bash-completion&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step #11 Install boot loader&lt;/p&gt;
+
+&lt;p&gt;We are now going to install grub and configure the boot loader. In my case I have a system with BIOS (if you have UFI then check out the appropriate Arch Wiki page).&lt;/p&gt;
+
+&lt;p&gt;Let’s first install grub for bios and configure it. Run these commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman -S grub 	
+
+
+
+# grub-install --target=i386-pc --recheck /dev/sda&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I have additional operating system installed on the same system and I wanted Arch to show these systems in the grub menu so I can select at the boot. Even if you don’t have other OSes installed I would recommend installing OS Prober:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pacman -S os-prober openssh&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once it is installed update the grub so Arch knows about other operating systems. Run this command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# grub-mkconfig -o /boot/grub/grub.cfg&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order for it to stay connected to the Internet after reboots, run this commands&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# systemctl enable dhcpcd.service 
+# systemctl start dhcpcd.service
+# systemctl enable sshd.service
+# systemctl 	&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We are now done with the installation and configuration of Arch Linux. There is still some work left – installing the Display Manager (X server), the desktop environment and appropriate graphics drivers. Since the OS is installed let’s reboot into the new OS. So first exit from the chroot environment:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# exit&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And now unmount the root, home and reboot the system:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# umount -R /mnt 	
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# reboot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;zfs_installation&quot;&gt;ZFS installation&lt;/h3&gt;
+
+&lt;p&gt;For fast and effortless installation and updates, the &lt;a href=&quot;http://docs.docker.io/en/latest/installation/archlinux/#installation&quot;&gt;“archzfs”&lt;/a&gt; signed repository is available to add to your &lt;code&gt;pacman.conf&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;/etc/pacman.conf&lt;/p&gt;
+
+&lt;p&gt;[demz-repo-core] SigLevel = Required Server = http://demizerone.com/$repo/$arch&lt;/p&gt;
+
+&lt;p&gt;The repository and packages are signed with the maintainer’s PGP key which is verifiable here: &lt;a href=&quot;http://demizerone.com&quot;&gt;http://demizerone.com&lt;/a&gt;. This key is not trusted by any of the Arch Linux master keys, so it will need to be locally signed before use. See &lt;a href=&quot;http://docs.docker.io/en/latest/installation/archlinux/#installation&quot;&gt;pacman-key&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Add the maintainer’s key,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman-key -r 0EE7A126&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and locally sign to add it to the system’s trust database,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman-key --lsign-key 0EE7A126&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once the key has been signed, it is now possible to update the package database,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman -Syyu&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and install ZFS packages:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# pacman -S archzfs&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;docker_installation&quot;&gt;Docker Installation&lt;/h2&gt;
+
+&lt;p&gt;For the normal package a simple&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pacman -S docker&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;is all that is needed.&lt;/p&gt;
+
+&lt;p&gt;For the AUR package execute:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yaourt -S docker-git&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The instructions here assume &lt;strong&gt;yaourt&lt;/strong&gt; is installed. See &lt;a href=&quot;https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_packages&quot;&gt;Arch User Repository&lt;/a&gt; for information on building and installing packages from the AUR if you have not done so before.&lt;/p&gt;
+
+&lt;h2 id=&quot;starting_docker&quot;&gt;Starting Docker&lt;/h2&gt;
+
+&lt;p&gt;There is a systemd service unit created for docker. To start the docker service:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo systemctl start docker&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To start on system boot:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo systemctl enable docker&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;network_configuration&quot;&gt;Network Configuration&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://docs.docker.io/en/latest/installation/archlinux/#network-configuration&quot;&gt;http://docs.docker.io/en/latest/installation/archlinux/#network-configuration&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;IPv4 packet forwarding is disabled by default on Arch, so internet access from inside the container may not work.&lt;/p&gt;
+
+&lt;p&gt;To enable the forwarding, run as root on the host system:&lt;/p&gt;
+
+&lt;p&gt;sysctl net.ipv4.ip_forward=1&lt;/p&gt;
+
+&lt;p&gt;And, to make it persistent across reboots, enable it on the host’s &lt;strong&gt;/etc/sysctl.d/docker.conf&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;net.ipv4.ip_forward=1&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>HLS straumar, notaðu Linux netþjón sem videótæki</title>
+   <link href="http://sillkongen.github.com/2013/05/10/hls-straumar-notau-linux-netjn-sem-videtki"/>
+   <updated>2013-05-10T00:00:00+02:00</updated>
+   <id>http://sillkongen.github.com/2013/05/10/hls-straumar-notau-linux-netjn-sem-videtki</id>
+   <content type="html">&lt;p&gt;Ég hef verið að sækja strauma handa krökkunum mínum svo þau geti horft á sama efnið aftur og aftur og til þess að spara mér bandvídd þá er ég að taka þessa strauma upp og hlaða þeim upp á netþjón innanhúss&lt;/p&gt;
+
+&lt;p&gt;Ég setti upp OpenVZ sýndarvél heima sem keyrir Ubuntu 12.04 LTS útgáfu.&lt;/p&gt;
+
+&lt;p&gt;Uppfærsla á pakkatré og uppsetning á ffmpeg.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    #apt-get update
+    #apt-get upgrade
+    #apt-get install ffmpeg&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ég er með skriftu sem heitir vcr.sh&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    #!/bin/sh
+    now=$(date +&amp;quot;%m_%d_%Y_%H_%M_%S&amp;quot;)
+    ffmpeg -i http://hostname.domain.com/path/playlist.m3u8 -t $1 -vcodec copy $2$now.mkv&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Breytan $1 er lengdin á upptökunni. (sekúndur)&lt;/li&gt;
+
+&lt;li&gt;Breytan $2 er skráanafnið.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Ég er svo með crontab færslu sem tekur alltaf upp á sama tíma á laugardögum.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    0 8 * * 6 sh /path/vcr.sh 10800 Laugardagar&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hver skrá fær þá nafn sem er Laugardagar+dagsetning.mkv þegar upptökunni er lokið færi ég hana yfir á miðlægan skráaþjón hjá mér&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    rsync --remove-source-files -pavl /recordings/$2$now.mkv* user@hostname:/path/to/destination&lt;/code&gt;&lt;/pre&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>How to reset iPod</title>
+   <link href="http://sillkongen.github.com/apple/2013/05/09/How-to-reset-ipod"/>
+   <updated>2013-05-09T00:00:00+02:00</updated>
+   <id>http://sillkongen.github.com/apple/2013/05/09/How-to-reset-ipod</id>
+   <content type="html">&lt;h3 id=&quot;how_to_reset_ipod&quot;&gt;How to reset iPod&lt;/h3&gt;
+
+&lt;p&gt;Ef að iPod neitar að ræsa þá er gott að framkvæma þessa aðgerð hérna að neðan. Ég lendi í þessu c.a. einu sinni á ári. Það er eins gott að henda inn bloggfærslu um þetta og geta þá leitað að henni.&lt;/p&gt;
+
+&lt;p&gt;Summary Learn how to reset or restart iPod following a freeze.&lt;/p&gt;
+
+&lt;p&gt;If you have an iPod shuffle, click here for reset steps. If you have an iPod touch, see this document.&lt;/p&gt;
+
+&lt;p&gt;Important: If your iPod is frozen or won’t turn on, it may be because iPod is paused or the Hold switch is in the locked position.&lt;/p&gt;
+
+&lt;p&gt;If so, a lock symbol appears on the screen. Slide the Hold switch to the unlocked position and check the screen.&lt;/p&gt;
+
+&lt;p&gt;If the iPod displays shows any of the following messages you should eject the iPod from within iTunes instead of resetting it:”Connected. Eject before disconnecting Sync in Progress. Please wait… Do not disconnect”&lt;/p&gt;
+
+&lt;p&gt;If your iPod is frozen or won’t turn on, the steps to reset it vary by model. You can easily tell which iPod model you have if you’re not sure.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Toggle the Hold switch on and off. (Slide it to Hold,then turn it off again.)&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+&lt;p&gt;Press and hold the Menu and Center (Select) buttons simultaneously until the Apple logo appears, about 6 to 8 seconds. You may need to repeat this step.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>SSH Reverse tunnel uppsetning</title>
+   <link href="http://sillkongen.github.com/os%20x/2013/05/08/ssh-reverse-tunnel-uppsetning"/>
+   <updated>2013-05-08T00:00:00+02:00</updated>
+   <id>http://sillkongen.github.com/os%20x/2013/05/08/ssh-reverse-tunnel-uppsetning</id>
+   <content type="html">&lt;h1 id=&quot;ssh_reverse_tunnel_uppsetning&quot;&gt;SSH reverse tunnel uppsetning&lt;/h1&gt;
+
+&lt;p&gt;Ég þarf reglulega að vinna við netþjóna sem hafa enga tengingu við internetið og þá eru stundum góð ráð dýr ef uppfæra þarf hugbúnað t.d.&lt;/p&gt;
+
+&lt;p&gt;Ég ætla að setja upp dæmi sem sýnir fram á SSH reverse tunnel frá OS X vél sem keyrir Squid Proxy þjón sem að netþjónninn notar til að uppfæra sig yfir internetið.&lt;/p&gt;
+
+&lt;p&gt;Byrjið á þvi að sækja Squidman sem er proxy fyrir OS X. Smellið á pakkann og farið í gegnum uppsetningarferlið.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt=&quot;image&quot; src=&quot;/images/squidman.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt=&quot;image&quot; src=&quot;/images/squidman_preferences.png&quot; /&gt; Breytið portinu í 6588 t.d.&lt;/p&gt;
+
+&lt;p&gt;Fyrst tengirðu þig inn á vélina sem þú vilt að fái nettengingu í gegnum proxy uppsetningu með SSH.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    #ssh -R 8080:localhost:6588 notandi@netþjónn
+    [root@netþjónn ~]# netstat -an | grep 8080
+    tcp   0   0 127.0.0.1:8080 0.0.0.0:* LISTEN
+    tcp   0   0 ::1:8080            :::* LISTEN&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;-R er rofi fyrir portið sem proxy þjónninn er að hlusta á, og :6588 er portið sem þú ert að hlusta á í proxy uppsetningunni.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    [root@netþjónn ~]# export http_proxy=http://localhost:8080&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Setjið proxy breytuna í yum.conf og gerið svo yum update og þá sést að þið hafið núna tengingu við internetið og getið uppfært eins og ekkert sé.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Wordpress uppsetning með Heroku</title>
+   <link href="http://sillkongen.github.com/2013/05/06/wordpress-uppsetning-me-heroku"/>
+   <updated>2013-05-06T00:00:00+02:00</updated>
+   <id>http://sillkongen.github.com/2013/05/06/wordpress-uppsetning-me-heroku</id>
+   <content type="html">&lt;p&gt;&lt;strong&gt;Uppsetning á WordPress á Heroku&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Ég ákvað að skoða Heroku í dag og ákvað að setja upp WordPress þar. Það gekk mjög auðveldlega. En fyrir þær sakir að ég var byrjaður að fikta með að koma nýju og gömli efni frá mér á jekyll þá geri ég ráð fyrir því að halda mig við þá uppsetningu.&lt;/p&gt;
+
+&lt;p&gt;Til þess að geta sett upp WordPress á Heroku verðurðu að setja upp aðgang þar.&lt;/p&gt;
+
+&lt;p&gt;Einnig þarf að setja upp “heroku toolbelt”. Hvað gerir heroku toolbelt, það setur upp eftirfarandi þrjá hluti:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Heroku client – CLI tool for creating and managing Heroku apps
+&lt;ul&gt;
+&lt;li&gt;Foreman – an easy option for running your apps locally&lt;/li&gt;
+
+&lt;li&gt;Git – revision control and pushing to Heroku&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;GETTING STARTED&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Once installed, you’ll have access to the heroku command from your command shell. Log in using the email address and password you used when creating your Heroku account:&lt;/p&gt;
+
+&lt;p&gt;$ heroku login Enter your Heroku credentials. Email: adam@example.com Password: Could not find an existing public key. Would you like to generate one? [Yn] Generating new SSH public key. Uploading ssh public key /Users/adam/.ssh/id_rsa.pub You’re now ready to create your first Heroku app:&lt;/p&gt;
+
+&lt;p&gt;$ cd ~/myapp $ heroku create Creating stark-fog-398… done, stack is cedar http://stark-fog-398.herokuapp.com/ | git@heroku.com:stark-fog-398.git Git remote heroku added&lt;/p&gt;
+
+&lt;p&gt;Þegar settur hefur verið upp Heroku aðgangur og Heroku toolbelt þá er hægt að snúa sér að því að setja upp WordPress. Afritið textann og fylgið leiðbeiningunum og það ætti að vera uppsett WordPress síða eftir 10 mínútur.&lt;/p&gt;
+
+&lt;p&gt;Ég afritaði beint af GitHub síðunni sem er til fyrir prójektið. Það er tengill neðst á GitHub síðuna.&lt;/p&gt;
+
+&lt;p&gt;git clone git://github.com/mhoofman/wordpress-heroku.git&lt;/p&gt;
+
+&lt;p&gt;With the Heroku gem, create your app&lt;/p&gt;
+
+&lt;p&gt;$ cd wordpress-heroku $ heroku create&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Creating strange-turtle-1234… done, stack is cedar http://strange-turtle-1234.herokuapp.com/ | git@heroku.com:strange-turtle-1234.git Git remote heroku added&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Promote the database (replace COLOR with the color name from the above output)&lt;/p&gt;
+
+&lt;p&gt;$ heroku pg:promote HEROKU_POSTGRESQL_COLOR&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Promoting HEROKU_POSTGRESQL_COLOR to DATABASE_URL… done&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Create a new branch for any configuration/setup changes needed&lt;/p&gt;
+
+&lt;p&gt;$ git checkout -b production Copy the wp-config.php&lt;/p&gt;
+
+&lt;p&gt;$ cp wp-config-sample.php wp-config.php Update unique keys and salts in wp-config.php on lines 48-55. WordPress can provide random values here.&lt;/p&gt;
+
+&lt;p&gt;define(‘AUTH_KEY’, ‘put your unique phrase here’); define(‘SECURE_AUTH_KEY’, ‘put your unique phrase here’); define(‘LOGGED_IN_KEY’, ‘put your unique phrase here’); define(‘NONCE_KEY’, ‘put your unique phrase here’); define(‘AUTH_SALT’, ‘put your unique phrase here’); define(‘SECURE_AUTH_SALT’, ‘put your unique phrase here’); define(‘LOGGED_IN_SALT’, ‘put your unique phrase here’); define(‘NONCE_SALT’, ‘put your unique phrase here’); Clear .gitignore and commit wp-config.php&lt;/p&gt;
+
+&lt;p&gt;$ &amp;gt;.gitignore $ git add . $ git commit -m “Initial WordPress commit” Deploy to Heroku&lt;/p&gt;
+
+&lt;p&gt;$ git push heroku production:master&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;—–&amp;gt; Heroku receiving push —–&amp;gt; PHP app detected —–&amp;gt; Bundling Apache v2.2.22 —–&amp;gt; Bundling PHP v5.3.10 —–&amp;gt; Discovering process types Procfile declares types -&amp;gt; (none) Default types for PHP -&amp;gt; web —–&amp;gt; Compiled slug size is 13.8MB —–&amp;gt; Launcing… done, v5 http://strange-turtle-1234.herokuapp.com deployed to Heroku&lt;/p&gt;
+
+&lt;p&gt;To git@heroku:strange-turtle-1234.git&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[new branch] production -&amp;gt; master&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;https://github.com/mhoofman/wordpress-heroku-&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Halló heimur</title>
+   <link href="http://sillkongen.github.com/2013/04/16/hall-heimur"/>
+   <updated>2013-04-16T00:00:00+02:00</updated>
+   <id>http://sillkongen.github.com/2013/04/16/hall-heimur</id>
+   <content type="html">&lt;h3 id=&quot;fyrsti_pstur&quot;&gt;Fyrsti póstur&lt;/h3&gt;
+
+&lt;p&gt;Ég er að prófa mig áfram með Jekyll hérna og að nota github til að hýsa síðuna. Ætli þetta verð ekki mest tæknilegs eðlis eins og:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Stýrikerfis
+&lt;ul&gt;
+&lt;li&gt;Storage&lt;/li&gt;
+
+&lt;li&gt;Embedded (Raspberry Pi)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Einnig á ég töluvert af glósum og efni sem ég vil gefa út aftur í tímann. Eitthvað af því er ennþá nothæft.&lt;/p&gt;</content>
+ </entry>
+ 
+ 
+</feed>
