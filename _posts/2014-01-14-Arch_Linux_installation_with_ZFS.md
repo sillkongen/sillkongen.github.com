@@ -2,6 +2,7 @@
 published: false
 ---
 
+{% include JB/setup %}
 Arch Linux installation January 2104
 ====================================
 
@@ -409,9 +410,3 @@ And, to make it persistent across reboots, enable it on the host’s **/etc/sysc
 
 
 net.ipv4.ip_forward=1
-
-
-
-
-
-
