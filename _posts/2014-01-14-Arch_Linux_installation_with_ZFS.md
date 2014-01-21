@@ -1,10 +1,12 @@
 ---
 layout: post
-title: "Arch Linux installation / January 2104"
+title: Arch Linux installation
 description: ""
-category: 
+category: null
 tags: []
+published: true
 ---
+
 {% include JB/setup %}
 
 
@@ -569,4 +571,3 @@ You will now be unable to log in through SSH under root, but will still be able 
 References:
 
 <http://www.muktware.com/2013/11/how-to-install-arch-linux-updated/16825/5>
-
