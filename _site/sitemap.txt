@@ -16,3 +16,5 @@ http://sillkongen.github.com/apple/2013/05/09/How-to-reset-ipod
 http://sillkongen.github.com/os%20x/2013/05/08/ssh-reverse-tunnel-uppsetning
 http://sillkongen.github.com/2013/05/06/wordpress-uppsetning-me-heroku
 http://sillkongen.github.com/2013/04/16/hall-heimur
+http://sillkongen.github.com/2013/04/05/Solaris-replace-bootblock
+http://sillkongen.github.com/solaris/2008/11/19/Replace-bootblock-Solaris

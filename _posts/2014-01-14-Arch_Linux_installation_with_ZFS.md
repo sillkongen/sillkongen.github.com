@@ -185,10 +185,10 @@ Let’s now configure the hardware clock. It is recommended to use UTC instead o
 
 Get a hostname
 
-If you want a custom hostname for your system, run the following command and choose your desired name instead of muktware
+If you want a custom hostname for your system, run the following command and choose your desired name instead of skywalkerranch
 
 
-	# echo muktware > /etc/hostname
+	# echo skywalkerranch > /etc/hostname
 
 
 Step #9 Configure repositories

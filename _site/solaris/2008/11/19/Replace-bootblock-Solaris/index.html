@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <title>
       
-        blog.skywalker.is - 
+        Replace bootblock in Solaris - 
       
       Blog.Skywalker.is
     </title>
-    
+    <meta name="description" content="">
     <meta name="author" content="Oskar Agustsson">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- HTML5 shim, for IE6-8 support of HTML elements -->
@@ -153,33 +153,99 @@
     <div class="container">
       <div class="content">
         
-<div class="page-header-wrapper">
-	<div class="page-header">
-  		<h1>blog.skywalker.is  <small>YATB</small></h1>
-  	</div>
+<div class="page-header">
+  <h1>
+    Replace bootblock in Solaris 
+    
+  </h1>
 </div>
 
 <div class="row">
-  <div class="span12">
-    <ul class='posts'>
+  <div class="span8">
+    <h3 id="sun_hardware_status">Sun hardware status</h3>
+
+<pre><code>Probing system devices
+Probing memory
+Probing I/O buses
+
+Sun Fire V240, No Keyboard
+
+Copyright 2006 Sun Microsystems, Inc.  All rights reserved.
+
+OpenBoot 4.22.19, 8192 MB memory installed, Serial #76523464.
+
+Ethernet address 0:14:4f:8f:a7:c8, Host ID: 848fa7c8.
+
+
+Initializing     1MB of memory at addr		127feec000                                                                   
+Initializing     1MB of memory at addr		127fe90000                                                                     
+Initializing    15MB of memory at addr		127f000000                                                                     
+Initializing  2032MB of memory at addr 		1200000000                                                                     
+Initializing  2048MB of memory at addr 		1000000000                                                                     
+Initializing  2048MB of memory at addr		200000000                                                                    
+Initializing  2048MB of memory at addr      0                                                                     
+
+Rebooting with command: boot</code></pre>
+
+<p>Boot device: /pci@1e,600000/LSILogic,scsi@3/disk@2,0:a File and args: The file just loaded does not appear to be executable.</p>
+
+<pre><code>{1} ok  </code></pre>
+
+<h3 id="boot_from_a_cdrom">Boot from a CDROM</h3>
+
+<p>Get a physical media with Solaris 9 or Solaris 10 (prior to 10/08 release). To boot from a CDROM from the openboot firmware and bring up the machine in a single user mode by typing</p>
+
+<pre><code>{1} ok  boot cdrom –s </code></pre>
+
+<h3 id="replace_the_bootblock">Replace the bootblock</h3>
+
+<pre><code>installboot /usr/platform/`uname -i`/lib/fs/ufs/bootblk /dev/rdsk/c0t0d0s0</code></pre>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn disabled prev">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next" href="/2013/04/05/Solaris-replace-bootblock" title="Solaris replace a bootblock">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+  </div>
   
-    <li><span>14 Jan 2014</span> &raquo; <a href='/2014/01/14/Arch_Linux_installation_with_ZFS'>Arch Linux installation</a></li>
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>19 November 2008</span></div>
+    </section>
+    
+      <section>
+        <h4>Category</h4>
+        <span class="category">
+          Solaris
+        </span>
+      </section>
+         
+    
+      <section>
+        <h4>Tags</h4>
+        <ul class="tag_box">
+          
+          
+
+
   
-    <li><span>10 May 2013</span> &raquo; <a href='/2013/05/10/hls-straumar-notau-linux-netjn-sem-videtki'>HLS straumar, notaðu Linux netþjón sem videótæki</a></li>
+     
+    	<li><a href="/tags.html#Solaris-ref">Solaris <span>1</span></a></li>
+    
   
-    <li><span>09 May 2013</span> &raquo; <a href='/apple/2013/05/09/How-to-reset-ipod'>How to reset iPod</a></li>
-  
-    <li><span>08 May 2013</span> &raquo; <a href='/os%20x/2013/05/08/ssh-reverse-tunnel-uppsetning'>SSH Reverse tunnel uppsetning</a></li>
-  
-    <li><span>06 May 2013</span> &raquo; <a href='/2013/05/06/wordpress-uppsetning-me-heroku'>Wordpress uppsetning með Heroku</a></li>
-  
-    <li><span>16 Apr 2013</span> &raquo; <a href='/2013/04/16/hall-heimur'>Halló heimur</a></li>
-  
-    <li><span>05 Apr 2013</span> &raquo; <a href='/2013/04/05/Solaris-replace-bootblock'>Solaris replace a bootblock</a></li>
-  
-    <li><span>19 Nov 2008</span> &raquo; <a href='/solaris/2008/11/19/Replace-bootblock-Solaris'>Replace bootblock in Solaris</a></li>
-  
-</ul>
+
+
+
+        </ul>
+      </section>
+             
   </div>
 </div>
 

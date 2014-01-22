@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>
       
-        Arch Linux installation / January 2104 - 
+        Arch Linux installation - 
       
       Blog.Skywalker.is
     </title>
@@ -155,14 +155,14 @@
         
 <div class="page-header">
   <h1>
-    Arch Linux installation / January 2104 
+    Arch Linux installation 
     
   </h1>
 </div>
 
 <div class="row">
   <div class="span8">
-    <p>Detailed installation of an Arch Linux installation with the following components: ZFS and Docker</p>
+    <p>Detailed installation of an Arch Linux installation with the following components: ZFS, Docker and OpenSSH</p>
 
 <h3 id="create_bootable_usb_stick">Create bootable USB stick</h3>
 
@@ -295,9 +295,9 @@ Step #8 Time zone</code></pre>
 
 <p>Get a hostname</p>
 
-<p>If you want a custom hostname for your system, run the following command and choose your desired name instead of muktware</p>
+<p>If you want a custom hostname for your system, run the following command and choose your desired name instead of skywalkerranch</p>
 
-<pre><code># echo muktware &gt; /etc/hostname</code></pre>
+<pre><code># echo skywalkerranch &gt; /etc/hostname</code></pre>
 
 <p>Step #9 Configure repositories</p>
 
@@ -391,13 +391,13 @@ Step #8 Time zone</code></pre>
 
 <h3 id="zfs_installation">ZFS installation</h3>
 
-<p>For fast and effortless installation and updates, the <a href="http://docs.docker.io/en/latest/installation/archlinux/#installation">“archzfs”</a> signed repository is available to add to your <code>pacman.conf</code>:</p>
+<p>For fast and effortless installation and updates, the <a href="https://wiki.archlinux.org/index.php/Fail2ban">“archzfs”</a> signed repository is available to add to your <code>pacman.conf</code>:</p>
 
 <p>/etc/pacman.conf</p>
 
 <p>[demz-repo-core] SigLevel = Required Server = http://demizerone.com/$repo/$arch</p>
 
-<p>The repository and packages are signed with the maintainer’s PGP key which is verifiable here: <a href="http://demizerone.com">http://demizerone.com</a>. This key is not trusted by any of the Arch Linux master keys, so it will need to be locally signed before use. See <a href="http://docs.docker.io/en/latest/installation/archlinux/#installation">pacman-key</a>.</p>
+<p>The repository and packages are signed with the maintainer’s PGP key which is verifiable here: <a href="http://demizerone.com">http://demizerone.com</a>. This key is not trusted by any of the Arch Linux master keys, so it will need to be locally signed before use. See <a href="https://wiki.archlinux.org/index.php/Fail2ban">pacman-key</a>.</p>
 
 <p>Add the maintainer’s key,</p>
 
@@ -427,7 +427,7 @@ Step #8 Time zone</code></pre>
 
 <pre><code>yaourt -S docker-git</code></pre>
 
-<p>The instructions here assume <strong>yaourt</strong> is installed. See <a href="https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_packages">Arch User Repository</a> for information on building and installing packages from the AUR if you have not done so before.</p>
+<p>The instructions here assume <strong>yaourt</strong> is installed. See <a href="https://wiki.archlinux.org/index.php/Sshguard">Arch User Repository</a> for information on building and installing packages from the AUR if you have not done so before.</p>
 
 <h2 id="starting_docker">Starting Docker</h2>
 
@@ -452,6 +452,130 @@ Step #8 Time zone</code></pre>
 <p>And, to make it persistent across reboots, enable it on the host’s <strong>/etc/sysctl.d/docker.conf</strong>:</p>
 
 <p>net.ipv4.ip_forward=1</p>
+
+<h2 id="openssh">OpenSSH</h2>
+
+<p><a href="https://wiki.archlinux.org/index.php/Fail2ban">Install</a> <a href="https://wiki.archlinux.org/index.php/Sshguard">openssh</a> from the <a href="https://wiki.archlinux.org/index.php/Fail2ban">official repositories</a>.</p>
+
+<h3 id="install">Install</h3>
+
+<p>pacman -S openssh</p>
+
+<h3 id="configuring_ssh">Configuring SSH</h3>
+
+<h4 id="client">Client</h4>
+
+<p>The SSH client configuration file is <code>/etc/ssh/ssh_config</code> or <code>~/.ssh/config</code>.</p>
+
+<p>It is not longer needed to explicitly set <code>Protocol 2</code>, it is commented out in the default configuration file. That means <code>Protocol 1</code> will not be used as long as it is not explicitly enabled. (source: <a href="http://www.openssh.org/txt/release-5.4">http://www.openssh.org/txt/release-5.4</a>)</p>
+
+<h4 id="daemon">Daemon</h4>
+
+<p>The SSH daemon configuration file can be found and edited in <code>/etc/ssh/sshd_config</code>.</p>
+
+<p>To allow access only for some users add this line:</p>
+
+<pre><code>AllowUsers    user1 user2</code></pre>
+
+<p>To allow access only for some groups:</p>
+
+<pre><code>AllowGroups   group1 group2</code></pre>
+
+<p>To disable root login over SSH, change the PermitRootLogin line into this:</p>
+
+<pre><code>PermitRootLogin no</code></pre>
+
+<p>To add a nice welcome message edit the file <code>/etc/issue</code> and change the Banner line into this:</p>
+
+<pre><code>Banner /etc/issue</code></pre>
+
+<p><strong>Tip:</strong></p>
+
+<ul>
+<li>
+<p>You may want to change the default port from 22 to any higher port (see <a href="https://wiki.archlinux.org/index.php/Sshguard">security through obscurity</a>). Even though the port ssh is running on could be detected by using a port-scanner like <a href="https://www.archlinux.org/packages/?name=nmap">nmap</a>, changing it will reduce the number of log entries caused by automated authentication attempts. To help select a port review the <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">list of TCP and UDP port numbers</a>. You can also find port information locally in <code>/etc/services</code>. Select an alternative port that is <strong>not</strong> already assigned to a common service to prevent conflicts.</p>
+</li>
+
+<li>
+<p>Disabling password logins entirely will greatly increase security, see <a href="https://wiki.archlinux.org/index.php/SSH_Keys">SSH Keys</a> for more information.</p>
+</li>
+</ul>
+
+<h3 id="managing_the_sshd_daemon">Managing the sshd daemon</h3>
+
+<p>You can start the sshd daemon with the following command:</p>
+
+<pre><code># systemctl start sshd</code></pre>
+
+<p>You can enable the sshd daemon at startup with the following command:</p>
+
+<pre><code># systemctl enable sshd.service</code></pre>
+
+<p><strong>Warning:</strong>Systemd is an asynchronous starting process. If you bind the SSH daemon to a specific IP address <code>ListenAddress 192.168.1.100</code> it may fail to load during boot since the default sshd.service unit file has no dependency on network interfaces being enabled. When binding to an IP address, you will need to add <code>After=network.target</code> to a custom sshd.service unit file. See <a href="https://wiki.archlinux.org/index.php/Systemd#Editing_provided_unit_files">Systemd#Editing provided unit files</a>.</p>
+
+<p>Or you can enable SSH Daemon socket so the daemon is started on the first incoming connection:</p>
+
+<pre><code># systemctl enable sshd.socket</code></pre>
+
+<p>If you use a different port than the default 22, you have to set “ListenStream” in the unit file. Copy /lib/systemd/system/sshd.socket to /etc/systemd/system/sshd.socket to keep your unit file from being overwritten on upgrades. In /etc/systemd/system/sshd.socket change “ListenStream” the appropriate port.</p>
+
+<p><strong>Warning:</strong>Using sshd.socket effectively negates the <code>ListenAddress</code> setting, so using the default sshd.socket will allow connections over any address. To achieve the effect of setting <code>ListenAddress</code>, you must create a custom unit file and modify ListenStream (ie. <code>ListenStream=192.168.1.100:22</code> is equivalent to <code>ListenAddress 192.168.1.100</code>). You must also add <code>FreeBind=true</code> under <code>[Socket]</code> or else setting the IP address will have the same drawback as setting <code>ListenAddress</code>: the socket will fail to start if the network is not up in time.</p>
+
+<h3 id="connecting_to_the_server">Connecting to the server</h3>
+
+<p>To connect to a server, run:</p>
+
+<pre><code>$ ssh -p port user@server-address</code></pre>
+
+<h3 id="protecting_ssh">Protecting SSH</h3>
+
+<p>Allowing remote log-on through SSH is good for administrative purposes, but can pose a threat to your server’s security. Often the target of brute force attacks, SSH access needs to be limited properly to prevent third parties gaining access to your server.</p>
+
+<ul>
+<li>
+<p>Use non-standard account names and passwords</p>
+</li>
+
+<li>
+<p>Only allow incoming SSH connections from trusted locations</p>
+</li>
+
+<li>
+<p>Use <a href="https://wiki.archlinux.org/index.php/Fail2ban">fail2ban</a> or <a href="https://wiki.archlinux.org/index.php/Sshguard">sshguard</a> to monitor for brute force attacks, and ban brute forcing IPs accordingly</p>
+</li>
+</ul>
+
+<h5 id="protecting_against_brute_force_attacks">Protecting against brute force attacks</h5>
+
+<p>Brute forcing is a simple concept: One continuously tries to log in to a webpage or server log-in prompt like SSH with a high number of random username and password combinations. You can protect yourself from brute force attacks by using an automated script that blocks anybody trying to brute force their way in, for example <a href="https://wiki.archlinux.org/index.php/Fail2ban">fail2ban</a> or <a href="https://wiki.archlinux.org/index.php/Sshguard">sshguard</a>.</p>
+
+<h5 id="deny_root_login">Deny root login</h5>
+
+<p>It is generally considered bad practice to allow the user <strong>root</strong> to log in over SSH: The <strong>root</strong> account will exist on nearly any Linux system and grants full access to the system, once login has been achieved. Sudo provides root rights for actions requiring these and is the more secure solution, third parties would have to find a username present on the system, the matching password and the matching password for sudo to get root rights on your system. More barriers to be breached before full access to the system is reached.</p>
+
+<p>Configure SSH to deny remote logins with the root user by editing <code>/etc/ssh/sshd_config</code> and look for this section:</p>
+
+<pre><code># Authentication:
+
+#LoginGraceTime 2m
+#PermitRootLogin yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10</code></pre>
+
+<p>Now simply change <em>#PermitRootLogin yes</em> to no, and uncomment the line:</p>
+
+<pre><code>PermitRootLogin no</code></pre>
+
+<p>Next, restart the SSH daemon:</p>
+
+<pre><code># systemctl restart sshd</code></pre>
+
+<p>You will now be unable to log in through SSH under root, but will still be able to log in with your normal user and use <em>su</em> - or <em>sudo</em> to do system administration.</p>
+
+<p>References:</p>
+
+<p><a href="http://www.muktware.com/2013/11/how-to-install-arch-linux-updated/16825/5">http://www.muktware.com/2013/11/how-to-install-arch-linux-updated/16825/5</a></p>
     <hr>
     <div class="pagination btn-group">
       
