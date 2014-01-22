@@ -284,30 +284,21 @@ Once it is installed update the grub so Arch knows about other operating systems
 	# grub-mkconfig -o /boot/grub/grub.cfg
 
 
-In order for it to stay connected to the Internet after reboots, run this commands
-
+In order for it to stay connected to the Internet after reboots, run these commands:
 
 	# systemctl enable dhcpcd.service 
     # systemctl start dhcpcd.service
     # systemctl enable sshd.service
     # systemctl 	
 
-
 We are now done with the installation and configuration of Arch Linux. There is still some work left – installing the Display Manager (X server), the desktop environment and appropriate graphics drivers. Since the OS is installed let’s reboot into the new OS. So first exit from the chroot environment:
-
 
 	# exit
 
-
 And now unmount the root, home and reboot the system:
 
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # umount -R /mnt 	
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # reboot
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### ZFS installation
 
